@@ -3,6 +3,8 @@
 CREATE DATABASE viveneVelas;
 USE viveneVelas;
 
+-- DROP database viveneVelas;
+
 -- Criação das tabelas --
 
 CREATE TABLE Login(
@@ -33,6 +35,7 @@ CREATE TABLE Lotes(
     quantidade INT,
     data_fabricacao DATE,
     data_validade DATE,
+    localizacao INT,
     FOREIGN KEY (fk_vela) REFERENCES Velas(id)
 );
 
