@@ -109,3 +109,53 @@ INSERT INTO Vendas (id, fk_pedido, metodoPag) VALUES
 (1, 1, 'Cartão de Crédito'),
 (2, 3, 'Dinheiro');
 
+
+-- Queries -- 
+
+-- View vela mais vendida 
+CREATE VIEW VelaMaisVendida AS
+SELECT 
+    V.nome AS Nome_da_Vela,
+    SUM(L.quantidade) AS Total_Vendido
+FROM 
+    Vendas VE
+JOIN 
+    Pedidos P ON VE.fk_pedido = P.id
+JOIN 
+    Pedido_lote PL ON P.id = PL.fk_pedido
+JOIN 
+    Lotes L ON PL.fk_lote = L.id
+JOIN 
+    Velas V ON L.fk_vela = V.id
+GROUP BY 
+    V.nome
+ORDER BY 
+    Total_Vendido DESC
+LIMIT 1;
+
+SELECT * FROM VelaMaisVendida;
+
+
+
+-- View top 5 velas mais vendidas
+CREATE VIEW TopCincoVelasMaisVendida AS
+SELECT 
+    V.nome AS Nome_da_Vela,
+    SUM(L.quantidade) AS Total_Vendido
+FROM 
+    Vendas VE
+JOIN 
+    Pedidos P ON VE.fk_pedido = P.id
+JOIN 
+    Pedido_lote PL ON P.id = PL.fk_pedido
+JOIN 
+    Lotes L ON PL.fk_lote = L.id
+JOIN 
+    Velas V ON L.fk_vela = V.id
+GROUP BY 
+    V.nome
+ORDER BY 
+    Total_Vendido DESC
+LIMIT 5;
+
+SELECT * FROM TopCincoVelasMaisVendida;
