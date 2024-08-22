@@ -24,8 +24,7 @@ CREATE TABLE Usuario(
 CREATE TABLE Velas(
 	id INT PRIMARY KEY,
     nome VARCHAR(45),
-    aroma VARCHAR(45),
-    tamanho CHAR(1),
+	tamanho CHAR(1),
     preco DOUBLE
 );
 
