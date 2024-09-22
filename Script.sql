@@ -21,6 +21,13 @@ CREATE TABLE Usuario(
     FOREIGN KEY (fk_login) REFERENCES Login(id)
 );
 
+CREATE TABLE Imagem(
+	id INT PRIMARY KEY auto_increment,
+    referencia VARCHAR(45)
+);
+
+select * FROM Imagem;
+
 CREATE TABLE Velas(
 	id INT PRIMARY KEY,
     nome VARCHAR(45),
