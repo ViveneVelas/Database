@@ -350,4 +350,3 @@ ORDER BY
     mes_ano ASC;
 
 SELECT * FROM quantidade_vendas_seis_meses;
-
