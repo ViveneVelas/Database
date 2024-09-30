@@ -16,7 +16,8 @@ CREATE TABLE login(
 
 CREATE TABLE usuario(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(45),
+    nome VARCHAR(255),
+    telefone VARCHAR(11),
     ultimo_acesso DATE,
     fk_login INT,
     FOREIGN KEY (fk_login) REFERENCES login(id)
@@ -25,6 +26,7 @@ CREATE TABLE usuario(
 CREATE TABLE velas(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(45),
+	descricao VARCHAR(255),
     tamanho VARCHAR(1),
     preco DOUBLE
 );
@@ -43,7 +45,7 @@ CREATE TABLE clientes(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(45),
     telefone CHAR(11),
-    qtdPedidos INT
+    qtd_pedidos INT
 );
 
 CREATE TABLE pedidos(
@@ -51,7 +53,8 @@ CREATE TABLE pedidos(
     data_do_pedido DATE,
     status_do_pedido VARCHAR(45),
     descricao VARCHAR(255),
-    tipoEntrega VARCHAR(45),
+    tipo_entrega VARCHAR(45),
+    preco FLOAT,
     fk_cliente INT,
     FOREIGN KEY (fk_cliente) REFERENCES clientes(id)
 );
@@ -68,17 +71,18 @@ CREATE TABLE pedido_vela(
 CREATE TABLE vendas(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_pedido INT,
-    metodoPag VARCHAR(45),
+    metodo_pag VARCHAR(45),
     FOREIGN KEY (fk_pedido) REFERENCES pedidos(id)
 );
 
 CREATE TABLE metas(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    dataInicio DATE,
-    qtdVendas INT
+    data_inicio DATE,
+	data_final DATE,
+    qtd_vendas INT
 );
 
-CREATE TABLE Imagem(
+CREATE TABLE imagem(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     referencia VARCHAR(45)
 );
@@ -106,13 +110,13 @@ INSERT INTO lotes (fk_vela, quantidade, data_fabricacao, data_validade, localiza
 (6, 50, '2024-07-01', '2024-09-15', 105);
 
 -- Tabela Clientes
-INSERT INTO clientes (nome, telefone, qtdPedidos) VALUES 
+INSERT INTO clientes (nome, telefone, qtd_pedidos) VALUES 
 ('Maria Silva', '11987654321', 2),
 ('João Pereira', '11912345678', 1),
 ('Ana Costa', '11923456789', 3);
 
 -- Tabela Pedidos
-INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipoEntrega, fk_cliente) VALUES 
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES 
 ('2024-08-15', 'Concluído', 'Pedido de velas aromáticas', 'Entrega Rápida', 1),
 ('2024-08-18', 'Pendente', 'Pedido de velas decorativas', 'Entrega Normal', 2),
 ('2024-08-20', 'Concluído', 'Pedido de velas perfumadas', 'Retirada na Loja', 3),
@@ -126,7 +130,7 @@ INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipoEntrega, f
 ('2024-09-20', 'Concluído', 'Pedido de velas decorativas', 'Retirada na Loja', 2),
 ('2024-09-25', 'Concluído', 'Pedido de velas perfumadas', 'Entrega Normal', 3);
 
-INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipoEntrega, fk_cliente) VALUES 
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES 
 ('2025-01-15', 'Concluído', 'Pedido de velas aromáticas', 'Entrega Rápida', 1);
 
 select * from velas;
@@ -146,7 +150,7 @@ INSERT INTO pedido_vela (fk_vela, fk_pedido,quantidade) VALUES
 (3, 12, 1);
 
 -- Tabela Vendas
-INSERT INTO vendas (fk_pedido, metodoPag) VALUES 
+INSERT INTO vendas (fk_pedido, metodo_pag) VALUES 
 (1, 'Cartão de Crédito'),
 (3, 'Dinheiro'),
 (4, 'Cartão de Crédito'), 
@@ -160,7 +164,7 @@ INSERT INTO vendas (fk_pedido, metodoPag) VALUES
 (12, 'Pix');
 
 -- Metas semanais
-INSERT INTO metas (dataInicio, qtdVendas) VALUES
+INSERT INTO metas (data_inicio, qtd_vendas) VALUES
 ('2024-03-19', 50), 
 ('2024-03-26', 60), 
 ('2024-04-02', 55),  
@@ -226,7 +230,7 @@ SELECT
     p.data_do_pedido AS data_do_pedido,
     p.status_do_pedido AS status_do_pedido,
     p.descricao AS descricao,
-    p.tipoEntrega AS tipo_de_entrega,
+    p.tipo_entrega AS tipo_de_entrega,
     c.nome AS nome_do_cliente,
     c.telefone AS telefone_do_cliente
 FROM
@@ -270,7 +274,7 @@ SELECT * FROM lotes_proximo_do_vencimento;
 CREATE OR REPLACE VIEW vendas_da_semana AS
 SELECT
     vendas.id AS id,
-    vendas.metodoPag AS metodo_de_pagamento,
+    vendas.metodo_pag AS metodo_de_pagamento,
     pedidos.data_do_pedido AS data_do_pedido,
     clientes.nome AS nome_do_cliente,
     clientes.telefone AS telefone_do_cliente
@@ -285,6 +289,24 @@ WHERE
     AND YEARWEEK(pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
 
 SELECT * FROM vendas_da_semana;
+
+-- ======================================================
+-- 5.1. VIEW VENDAS QTD DA SEMANA - OK
+-- ======================================================
+CREATE OR REPLACE VIEW qtd_vendas_da_semana AS
+SELECT 
+    COUNT(vendas.id) AS qtd
+FROM 
+    vendas
+JOIN 
+    pedidos ON vendas.fk_pedido = pedidos.id
+JOIN 
+    clientes ON pedidos.fk_cliente = clientes.id
+WHERE 
+    pedidos.status_do_pedido = 'Concluído'
+    AND YEARWEEK(pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
+
+SELECT * FROM qtd_vendas_da_semana;
 
 -- ======================================================
 -- 6. VIEW PARA ENCONTRAR CLIENTES COM MAIS COMPRAS - OK
@@ -314,17 +336,17 @@ SELECT * FROM clientes_mais_compras;
 CREATE OR REPLACE VIEW ultima_meta_seis_meses AS
 SELECT 
     ROW_NUMBER() OVER() AS id,
-    dataInicio as data_inicio,
-    qtdVendas as quantidade_vendas
+    data_inicio as data_inicio,
+    qtd_vendas as quantidade_vendas
 FROM (
     SELECT 
-        dataInicio,
-        qtdVendas,
-        ROW_NUMBER() OVER (PARTITION BY YEAR(dataInicio), MONTH(dataInicio) ORDER BY dataInicio DESC) AS rn
+        data_inicio,
+        qtd_vendas,
+        ROW_NUMBER() OVER (PARTITION BY YEAR(data_inicio), MONTH(data_inicio) ORDER BY data_inicio DESC) AS rn
     FROM 
         metas
     WHERE 
-        dataInicio >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+        data_inicio >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
 ) AS UltimasMetas
 WHERE rn = 1
 LIMIT 6;
@@ -350,3 +372,4 @@ ORDER BY
     mes_ano ASC;
 
 SELECT * FROM quantidade_vendas_seis_meses;
+
