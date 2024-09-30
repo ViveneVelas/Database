@@ -56,11 +56,12 @@ CREATE TABLE pedidos(
     FOREIGN KEY (fk_cliente) REFERENCES clientes(id)
 );
 
-CREATE TABLE pedido_lote(
+CREATE TABLE pedido_vela(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    fk_lote INT,
+    quantidade INT,
+    fk_vela INT,
     fk_pedido INT,
-    FOREIGN KEY (fk_lote) REFERENCES lotes(id),
+    FOREIGN KEY (fk_vela) REFERENCES velas(id),
     FOREIGN KEY (fk_pedido) REFERENCES pedidos(id)
 );
 
@@ -128,17 +129,21 @@ INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipoEntrega, f
 INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipoEntrega, fk_cliente) VALUES 
 ('2025-01-15', 'Concluído', 'Pedido de velas aromáticas', 'Entrega Rápida', 1);
 
+select * from velas;
+select * from pedidos;
+select * from pedido_vela;
+
 -- Tabela Pedido_lote
-INSERT INTO pedido_lote (fk_lote, fk_pedido) VALUES 
-(1, 1),
-(3, 2),
-(4, 3),
-(1, 7),
-(2, 8),
-(3, 9),
-(1, 10),
-(2, 11),
-(3, 12);
+INSERT INTO pedido_vela (fk_vela, fk_pedido,quantidade) VALUES 
+(1, 1, 2),
+(3, 2, 3),
+(4, 3, 1),
+(1, 7, 4),
+(6, 8, 1),
+(3, 9, 2),
+(5, 10, 1),
+(2, 11, 2),
+(3, 12, 1);
 
 -- Tabela Vendas
 INSERT INTO vendas (fk_pedido, metodoPag) VALUES 
@@ -177,24 +182,18 @@ INSERT INTO metas (dataInicio, qtdVendas) VALUES
 -- 1. VIEW VELA MAIS VENDIDA - OK
 -- ======================================================
 CREATE OR REPLACE VIEW vela_mais_vendida AS
-SELECT
-    ROW_NUMBER() OVER (ORDER BY SUM(l.quantidade) DESC) AS id,
-    v.nome AS Nome_da_Vela,
-    SUM(l.quantidade) AS Total_Vendido
-FROM
-    vendas ve
-JOIN
-    pedidos p ON ve.fk_pedido = p.id
-JOIN
-    pedido_lote pl ON p.id = pl.fk_pedido
-JOIN
-    lotes l ON pl.fk_lote = l.id
-JOIN
-    velas v ON l.fk_vela = v.id
-GROUP BY
-    v.nome
-ORDER BY
-    Total_Vendido DESC
+SELECT 
+    v.id AS vela_id,
+    v.nome AS vela_nome,
+    SUM(pv.quantidade) AS total_vendido
+FROM 
+    pedido_vela pv
+JOIN 
+    velas v ON pv.fk_vela = v.id
+GROUP BY 
+    v.id, v.nome
+ORDER BY 
+    total_vendido DESC
 LIMIT 1;
 
 SELECT * FROM vela_mais_vendida;
@@ -203,28 +202,21 @@ SELECT * FROM vela_mais_vendida;
 -- 2. VIEW TOP 5 VELAS MAIS VENDIDAS - OK
 -- ======================================================
 CREATE OR REPLACE VIEW top_cinco_velas AS
-SELECT
-    ROW_NUMBER() OVER (ORDER BY SUM(l.quantidade) DESC) AS id,  -- Gera um ID único
-    v.nome AS Nome_da_Vela,
-    SUM(l.quantidade) AS Total_Vendido
-FROM
-    vendas ve
-JOIN
-    pedidos p ON ve.fk_pedido = p.id
-JOIN
-    pedido_lote pl ON p.id = pl.fk_pedido
-JOIN
-    lotes l ON pl.fk_lote = l.id
-JOIN
-    velas v ON l.fk_vela = v.id
-GROUP BY
-    v.nome
-ORDER BY
-    Total_Vendido DESC
+SELECT 
+    v.id AS vela_id,
+    v.nome AS vela_nome,
+    SUM(pv.quantidade) AS total_vendido
+FROM 
+    pedido_vela pv
+JOIN 
+    velas v ON pv.fk_vela = v.id
+GROUP BY 
+    v.id, v.nome
+ORDER BY 
+    total_vendido DESC
 LIMIT 5;
 
-SELECT * FROM
-
+SELECT * FROM top_cinco_velas;
 -- ======================================================
 -- 3. VIEW PROX PEDIDO - A FAZER
 -- ======================================================
@@ -253,23 +245,22 @@ SELECT * FROM proximo_pedido;
 -- 4. VIEW LOTES PROXIMOS DO VENCIMENTO - OK
 -- ======================================================
 CREATE OR REPLACE VIEW lotes_proximo_do_vencimento AS
-SELECT
-    l.id,
+SELECT 
+    l.id AS id,
+    v.nome AS nome_da_vela,
+    l.quantidade,
     l.data_fabricacao,
     l.data_validade,
-    v.nome AS nome_da_vela,
-    l.quantidade AS qtd_disponivel,
-    (l.quantidade - COUNT(p.id)) AS qtd_vencimento
-FROM
+    l.localizacao
+FROM 
     lotes l
-JOIN
+JOIN 
     velas v ON l.fk_vela = v.id
-LEFT JOIN
-    pedido_lote pl ON l.id = pl.fk_lote
-LEFT JOIN
-    pedidos p ON pl.fk_pedido = p.id AND p.status_do_pedido = 'Concluído'
-GROUP BY
-    l.id, l.data_fabricacao, l.data_validade, v.nome, l.quantidade;
+WHERE 
+    l.data_validade > CURDATE()
+ORDER BY 
+    l.data_validade ASC
+LIMIT 1;
 
 SELECT * FROM lotes_proximo_do_vencimento;
 
@@ -314,9 +305,6 @@ GROUP BY
 ORDER BY
     numero_de_pedidos DESC
 LIMIT 5;
-DROP DATABASE IF EXISTS viveneVelas;
-CREATE DATABASE viveneVelas;
-USE viveneVelas;
 
 SELECT * FROM clientes_mais_compras;
 
@@ -362,5 +350,3 @@ ORDER BY
     mes_ano ASC;
 
 SELECT * FROM quantidade_vendas_seis_meses;
-
-
