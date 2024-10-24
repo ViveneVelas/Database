@@ -373,3 +373,47 @@ ORDER BY
 
 SELECT * FROM quantidade_vendas_seis_meses;
 
+-- ======================================================
+-- 9. VIEW PARA OBTER O MAIOR PEDIDO FEITO
+-- ======================================================
+
+CREATE OR REPLACE VIEW maior_pedido_pendente AS
+SELECT 
+    p.id AS pedido_id,
+    p.descricao AS descricao_pedido,
+    SUM(pv.quantidade) AS total_itens
+FROM 
+    pedidos p
+JOIN 
+    pedido_vela pv ON p.id = pv.fk_pedido
+WHERE 
+    p.status_do_pedido = 'Pendente'
+GROUP BY 
+    p.id, p.descricao
+ORDER BY 
+    total_itens DESC
+LIMIT 1;
+
+SELECT * FROM maior_pedido_pendente;
+
+-- ======================================================
+-- 10. VIEW PARA OBTER A VELA COM A MENOR QUANTIDADE
+-- ======================================================
+
+CREATE OR REPLACE VIEW lote_menor_quantidade AS
+SELECT 
+    l.id AS lote_id,
+    v.nome AS nome_vela,
+    l.fk_vela AS fk_vela,
+    l.quantidade AS quantidade_no_lote
+FROM 
+    lotes l
+JOIN 
+    velas v ON l.fk_vela = v.id
+ORDER BY 
+    l.quantidade ASC
+LIMIT 1;
+
+SELECT * FROM lote_menor_quantidade;
+
+
