@@ -87,6 +87,7 @@ CREATE TABLE imagem(
     referencia VARCHAR(45)
 );
 
+select * from lotes;
 -- Populando banco de dados --
 
 -- Tabela Velas
@@ -372,6 +373,7 @@ ORDER BY
     mes_ano ASC;
 
 SELECT * FROM quantidade_vendas_seis_meses;
+select * from vendas;
 
 -- ======================================================
 -- 9. VIEW PARA OBTER O MAIOR PEDIDO FEITO
@@ -417,3 +419,49 @@ LIMIT 1;
 SELECT * FROM lote_menor_quantidade;
 
 
+SELECT * FROM lotes;
+
+
+-- Inserindo novos pedidos nos últimos seis meses
+
+-- Pedidos realizados em 2024-05
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-05-01', 'Concluído', 'Pedido de velas aromáticas Lavanda', 'Entrega Normal', 1),
+('2024-05-02', 'Concluído', 'Pedido de velas de Soja Baunilha', 'Retirada na Loja', 2),
+('2024-05-10', 'Concluído', 'Pedido de velas decorativas Citrus', 'Entrega Rápida', 3);
+
+-- Pedidos realizados em 2024-06
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-06-01', 'Concluído', 'Pedido de velas Perfumadas Rosas', 'Entrega Normal', 1),
+('2024-06-03', 'Concluído', 'Pedido de velas Aromáticas Laranja', 'Retirada na Loja', 2),
+('2024-06-15', 'Concluído', 'Pedido de velas Aromáticas', 'Entrega Rápida', 3);
+
+-- Pedidos realizados em 2024-07
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-07-01', 'Concluído', 'Pedido de velas Aromáticas Lavanda', 'Entrega Normal', 1),
+('2024-07-10', 'Concluído', 'Pedido de velas de Soja Baunilha', 'Retirada na Loja', 2),
+('2024-07-15', 'Concluído', 'Pedido de velas Decorativas Citrus', 'Entrega Rápida', 3);
+
+-- Pedidos realizados em 2024-08
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-08-01', 'Concluído', 'Pedido de velas Perfumadas Rosas', 'Entrega Normal', 1),
+('2024-08-10', 'Concluído', 'Pedido de velas Aromáticas Laranja', 'Retirada na Loja', 2),
+('2024-08-15', 'Concluído', 'Pedido de velas Aromáticas', 'Entrega Rápida', 3);
+
+-- Pedidos realizados em 2024-09
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-09-01', 'Concluído', 'Pedido de velas Aromáticas Lavanda', 'Entrega Normal', 1),
+('2024-09-10', 'Concluído', 'Pedido de velas de Soja Baunilha', 'Retirada na Loja', 2),
+('2024-09-15', 'Concluído', 'Pedido de velas Decorativas Citrus', 'Entrega Rápida', 3);
+
+-- Pedidos realizados em 2024-10
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-10-01', 'Concluído', 'Pedido de velas Perfumadas Rosas', 'Entrega Normal', 1),
+('2024-10-05', 'Concluído', 'Pedido de velas Aromáticas Laranja', 'Retirada na Loja', 2),
+('2024-10-10', 'Concluído', 'Pedido de velas Aromáticas', 'Entrega Rápida', 3);
+
+-- Pedidos realizados em 2024-11 (exemplo recente)
+INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, fk_cliente) VALUES
+('2024-11-01', 'Concluído', 'Pedido de velas Aromáticas Lavanda', 'Entrega Normal', 1),
+('2024-11-03', 'Concluído', 'Pedido de velas de Soja Baunilha', 'Retirada na Loja', 2),
+('2024-11-07', 'Concluído', 'Pedido de velas Decorativas Citrus', 'Entrega Rápida', 3);
