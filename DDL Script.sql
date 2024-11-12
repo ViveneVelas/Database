@@ -1,9 +1,6 @@
--- Estrutura do banco de dados Vivene Velas --
-
+DROP DATABASE IF EXISTS viveneVelas;
 CREATE DATABASE viveneVelas;
 USE viveneVelas;
-
--- Tabelas -- 
 
 CREATE TABLE login(
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -20,9 +17,9 @@ CREATE TABLE usuario(
     FOREIGN KEY (fk_login) REFERENCES login(id)
 );
 
-CREATE TABLE bucketS3 (
+CREATE TABLE imagem(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    referencia VARCHAR(50)
+    referencia VARCHAR(45)
 );
 
 CREATE TABLE velas(
@@ -31,8 +28,8 @@ CREATE TABLE velas(
 	descricao VARCHAR(255),
     tamanho VARCHAR(1),
     preco DOUBLE,
-    fk_bucketS3 INT,
-    FOREIGN KEY (fk_bucketS3) REFERENCES bucketS3(id)
+    fk_imagem INT,
+    FOREIGN KEY (fk_imagem) REFERENCES imagem(id)
 );
 
 CREATE TABLE lotes(
@@ -42,14 +39,13 @@ CREATE TABLE lotes(
     data_fabricacao DATE,
     data_validade DATE,
     localizacao INT,
-    fk_bucketS3 INT,
-    FOREIGN KEY (fk_vela) REFERENCES velas(id),
-	FOREIGN KEY (fk_bucketS3) REFERENCES bucketS3(id)
+    codigo_qr_code VARCHAR(255),
+    FOREIGN KEY (fk_vela) REFERENCES velas(id)
 );
 
 CREATE TABLE clientes(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(45) UNIQUE,
+    nome VARCHAR(45),
     telefone CHAR(11),
     qtd_pedidos INT
 );
@@ -87,4 +83,3 @@ CREATE TABLE metas(
 	data_final DATE,
     qtd_vendas INT
 );
-
