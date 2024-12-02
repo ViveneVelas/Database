@@ -87,7 +87,7 @@ JOIN (
         MONTH(data_inicio) AS mes, 
         MAX(data_inicio) AS ultima_data
     FROM metas
-    WHERE data_inicio >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    WHERE data_inicio >= DATE_SUB(CURDATE(), INTERVAL 7 MONTH)
     GROUP BY ano, mes
 ) ultimas_metas
 ON YEAR(m.data_inicio) = ultimas_metas.ano 
