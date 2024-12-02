@@ -110,7 +110,7 @@ FROM
 ORDER BY
     numero_de_pedidos DESC
     LIMIT 5;
-SELECT * FROM clientes_mais_compras;
+SELECT * FROM clientes_mais_compras;    
 
 
 
@@ -120,45 +120,70 @@ SELECT * FROM clientes_mais_compras;
 -- ======================================================
 -- 5. VIEW VENDAS DA SEMANA - A FAZER
 -- ======================================================
-CREATE VIEW vendas_da_semana AS
+CREATE OR REPLACE VIEW vendas_da_semana AS
 SELECT 
-    Vendas.id AS id,
-    Vendas.metodoPag AS metodo_de_pagamento,
-    Pedidos.data_do_pedido AS data_do_pedido,
-    Clientes.nome AS nome_do_cliente,
-    Clientes.telefone AS telefone_do_cliente
+    vendas.id AS id,
+    vendas.metodo_pag AS metodo_de_pagamento,
+    pedidos.data_do_pedido AS data_do_pedido,
+    clientes.nome AS nome_do_cliente,
+    clientes.telefone AS telefone_do_cliente
 FROM 
-    Vendas
+    vendas
 JOIN 
-    Pedidos ON Vendas.fk_pedido = Pedidos.id
+    pedidos ON vendas.fk_pedido = pedidos.id
 JOIN 
-    Clientes ON Pedidos.fk_cliente = Clientes.id
+    clientes ON pedidos.fk_cliente = clientes.id
 WHERE 
-    Pedidos.status_do_pedido = 'Concluído'
-    AND YEARWEEK(Pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
+    pedidos.status_do_pedido = 'concluido'
+    AND YEARWEEK(pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
     
 SELECT * FROM vendas_da_semana;
 
 -- ======================================================
 -- 3. VIEW PROX PEDIDO - A FAZER
 -- ======================================================
-CREATE VIEW proximo_pedido AS
+CREATE OR REPLACE VIEW proximo_pedido AS
 SELECT 
     P.id AS id,
     P.data_do_pedido AS data_do_pedido,
     P.status_do_pedido AS status_do_pedido,
     P.descricao AS descricao,
-    P.tipoEntrega AS tipo_de_entrega,
+    P.tipo_entrega AS tipo_de_entrega,
     C.nome AS nome_do_cliente,
     C.telefone AS telefone_do_cliente
 FROM 
-    Pedidos P
+    pedidos P
 JOIN 
-    Clientes C ON P.fk_cliente = C.id
+    clientes C ON P.fk_cliente = C.id
 WHERE 
-    P.status_do_pedido = 'Pendente'
+    P.status_do_pedido != 'concluido'
 ORDER BY 
     P.data_do_pedido ASC
 LIMIT 1;
 
 SELECT * FROM proximo_pedido;
+
+
+CREATE OR REPLACE VIEW top_cinco_pedidos AS
+SELECT
+   ROW_NUMBER() OVER() AS id,
+   p.data_do_pedido AS data_pedido,
+   c.nome AS nome_cliente,
+   SUM(pv.quantidade) AS quantidade_velas
+FROM 
+   pedidos p
+JOIN 
+   pedido_vela pv ON p.id = pv.fk_pedido
+JOIN 
+   clientes c ON p.fk_cliente = c.id
+WHERE
+   p.status_do_pedido != 'concluido'
+   AND p.data_do_pedido > CURDATE()
+GROUP BY
+   p.id, p.data_do_pedido, c.nome
+ORDER BY 
+   p.data_do_pedido ASC
+LIMIT 5;
+
+
+SELECT * FROM top_cinco_pedidos;

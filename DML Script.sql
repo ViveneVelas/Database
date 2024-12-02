@@ -38,47 +38,44 @@ INSERT INTO pedidos (data_do_pedido, status_do_pedido, descricao, tipo_entrega, 
     ('2024-05-05', 'concluido', 'Pedido de velas personalizadas', 'normal', 220.00, 5),
     ('2024-05-11', 'concluido', 'Pedido de velas aromáticas', 'expressa', 125.00, 6),
     ('2024-05-17', 'concluido', 'Pedido de velas decorativas', 'normal', 80.00, 1),
-    
     ('2024-06-09', 'concluido', 'Pedido de velas decorativas', 'normal', 200.00, 5),
     ('2024-06-15', 'concluido', 'Pedido de velas para eventos', 'expressa', 100.00, 6),
     ('2024-06-21', 'concluido', 'Pedido de velas personalizadas', 'normal', 220.00, 1),
     ('2024-06-27', 'concluido', 'Pedido de velas com temas variados', 'expressa', 130.00, 2),
-    
     ('2024-07-05', 'concluido', 'Pedido de velas exclusivas', 'normal', 150.00, 3),
     ('2024-07-12', 'concluido', 'Pedido de velas variadas', 'expressa', 175.00, 4),
     ('2024-07-18', 'concluido', 'Pedido de velas decorativas', 'normal', 100.00, 5),
     ('2024-07-24', 'concluido', 'Pedido de velas aromáticas', 'expressa', 220.00, 6),
     ('2024-07-30', 'concluido', 'Pedido de velas personalizadas', 'normal', 125.00, 1),
-    
     ('2024-08-01', 'concluido', 'Pedido de velas para eventos', 'expressa', 95.00, 2),
     ('2024-08-07', 'concluido', 'Pedido de velas decorativas', 'normal', 130.00, 3),
     ('2024-08-14', 'concluido', 'Pedido de velas com temas variados', 'expressa', 210.00, 4),
     ('2024-08-21', 'concluido', 'Pedido de velas aromáticas', 'normal', 120.00, 5),
     ('2024-08-28', 'concluido', 'Pedido de velas personalizadas', 'expressa', 85.00, 6),
-    
     ('2024-09-04', 'concluido', 'Pedido de velas exclusivas', 'normal', 180.00, 1),
     ('2024-09-11', 'concluido', 'Pedido de velas para eventos', 'expressa', 100.00, 2),
     ('2024-09-18', 'concluido', 'Pedido de velas decorativas', 'normal', 75.00, 3),
     ('2024-09-18', 'concluido', 'Pedido de velas decorativas', 'normal', 75.00, 3),
     ('2024-09-25', 'concluido', 'Pedido de velas variadas', 'expressa', 110.00, 4),
     ('2024-09-30', 'concluido', 'Pedido de velas com temas variados', 'normal', 105.00, 5),
-    ('2024-09-30', 'concluido', 'Pedido de velas com temas variados', 'normal', 105.00, 5),
-    
+    ('2024-09-30', 'concluido', 'Pedido de velas com temas variados', 'normal', 105.00, 5),    
     ('2024-10-03', 'concluido', 'Pedido de velas aromáticas', 'expressa', 135.00, 6),
     ('2024-10-10', 'concluido', 'Pedido de velas personalizadas', 'normal', 115.00, 1),
     ('2024-10-17', 'concluido', 'Pedido de velas decorativas', 'expressa', 150.00, 2),
     ('2024-10-17', 'concluido', 'Pedido de velas decorativas', 'expressa', 150.00, 2),
     ('2024-10-24', 'concluido', 'Pedido de velas exclusivas', 'normal', 210.00, 3),
     ('2024-10-31', 'concluido', 'Pedido de velas para eventos', 'expressa', 195.00, 4),
-
     ('2024-11-01', 'concluido', 'Pedido de velas decorativas', 'normal', 105.00, 5),
     ('2024-11-05', 'concluido', 'Pedido de velas variadas', 'expressa', 220.00, 6),
     ('2024-11-10', 'concluido', 'Pedido de velas aromáticas', 'normal', 85.00, 1),
     ('2024-11-10', 'concluido', 'Pedido de velas aromáticas', 'normal', 85.00, 1),
-	('2024-11-15', 'andamento', 'Pedido de velas personalizadas', 'expressa', 180.00, 2),
-    ('2024-11-21', 'nao-iniciado', 'Pedido de velas aromáticas', 'normal', 85.00, 1),
-    ('2024-11-22', 'nao-iniciado', 'Pedido de velas aromáticas', 'normal', 85.00, 1),
-    ('2024-11-27', 'nao-iniciado', 'Pedido de velas com temas variados', 'normal', 115.00, 3);
+	('2024-12-07', 'andamento', 'Pedido de velas personalizadas', 'expressa', 180.00, 2),
+    ('2024-12-09', 'andamento', 'Pedido de velas aromáticas', 'expressa', 100.00, 6),
+    ('2024-12-17', 'andamento', 'Pedido de velas para eventos', 'expressa', 150.00, 6),
+    ('2024-12-21', 'nao-iniciado', 'Pedido de velas aromáticas', 'normal', 85.00, 1),
+    ('2024-12-22', 'nao-iniciado', 'Pedido de velas decorativas', 'normal', 300.00, 1),
+    ('2024-12-29', 'nao-iniciado', 'Pedido de velas para eventos', 'expressa', 100.00, 6),
+    ('2024-12-27', 'nao-iniciado', 'Pedido de velas com temas variados', 'normal', 115.00, 3);
 
 INSERT INTO pedido_vela (quantidade, fk_vela, fk_pedido) VALUES
     (2, 1, 1), -- Pedido 1: "Pink Lemonade" (2 unidades)
@@ -86,14 +83,12 @@ INSERT INTO pedido_vela (quantidade, fk_vela, fk_pedido) VALUES
     (3, 3, 2), -- Pedido 2: "Lemongrass Fields" (3 unidades)
     (1, 1, 3), -- Pedido 3: "Pink Lemonade" (1 unidade)
     (2, 4, 3), -- Pedido 3: "Gran Café" (2 unidades)
-
     (2, 2, 4), -- Pedido 4: "Brisa da Manhã" (2 unidades)
     (1, 4, 5), -- Pedido 5: "Gran Café" (1 unidade)
     (2, 3, 5), -- Pedido 5: "Lemongrass Fields" (2 unidades)
     (1, 1, 6), -- Pedido 6: "Pink Lemonade" (1 unidade)
     (3, 2, 6), -- Pedido 6: "Brisa da Manhã" (3 unidades)
     (4, 3, 7), -- Pedido 7: "Lemongrass Fields" (4 unidades)
-
     (2, 4, 8), -- Pedido 8: "Gran Café" (2 unidades)
     (1, 1, 9), -- Pedido 9: "Pink Lemonade" (1 unidade)
     (3, 2, 9), -- Pedido 9: "Brisa da Manhã" (3 unidades)
@@ -102,7 +97,6 @@ INSERT INTO pedido_vela (quantidade, fk_vela, fk_pedido) VALUES
     (2, 2, 11), -- Pedido 11: "Brisa da Manhã" (2 unidades)
     (1, 1, 12), -- Pedido 12: "Pink Lemonade" (1 unidade)
     (2, 3, 12), -- Pedido 12: "Lemongrass Fields" (2 unidades)
-
     (2, 1, 13), -- Pedido 13: "Pink Lemonade" (2 unidades)
     (3, 3, 14), -- Pedido 14: "Lemongrass Fields" (3 unidades)
     (1, 2, 15), -- Pedido 15: "Brisa da Manhã" (1 unidade)
@@ -110,7 +104,6 @@ INSERT INTO pedido_vela (quantidade, fk_vela, fk_pedido) VALUES
     (1, 1, 16), -- Pedido 16: "Pink Lemonade" (1 unidade)
     (3, 2, 16), -- Pedido 16: "Brisa da Manhã" (3 unidades)
     (2, 3, 17), -- Pedido 17: "Lemongrass Fields" (2 unidades)
-    
     (1, 4, 18), -- Pedido 18: "Gran Café" (1 unidade)
     (2, 2, 19), -- Pedido 19: "Brisa da Manhã" (2 unidades)
     (1, 1, 20), -- Pedido 20: "Pink Lemonade" (1 unidade)
@@ -120,7 +113,6 @@ INSERT INTO pedido_vela (quantidade, fk_vela, fk_pedido) VALUES
     (1, 4, 23),
     (2, 2, 24),
     (1, 1, 24),
-    
     (1, 1, 25),
     (1, 2, 26),
     (1, 4, 27),
@@ -128,7 +120,6 @@ INSERT INTO pedido_vela (quantidade, fk_vela, fk_pedido) VALUES
     (1, 1, 28),
     (1, 2, 29),
     (1, 1, 30),
-    
     (1, 4, 31),
     (1, 3, 32),
     (1, 2, 33),
