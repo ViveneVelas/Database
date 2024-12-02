@@ -79,7 +79,7 @@ CREATE OR REPLACE VIEW ultima_meta_seis_meses AS
 SELECT 
 	id,
     data_inicio,
-    qtd_vendas
+    qtd_vendas quantidade_vendas
 FROM metas m
 JOIN (
     SELECT 
@@ -164,6 +164,10 @@ LIMIT 1;
 SELECT * FROM proximo_pedido;
 
 
+
+-- ======================================================
+-- 3. VIEW TOP CINCO PEDIDOS PRÓXIMO AO VENCIMENTO 
+-- ======================================================
 CREATE OR REPLACE VIEW top_cinco_pedidos AS
 SELECT
    ROW_NUMBER() OVER() AS id,
