@@ -1,17 +1,14 @@
--- Estrutura do banco de dados Vivene Velas --
-
+DROP DATABASE IF EXISTS viveneVelas;
 CREATE DATABASE viveneVelas;
 USE viveneVelas;
 
--- Tabelas -- 
-
-CREATE TABLE login(
+CREATE TABLE IF NOT EXISTS login(
     id INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(45),
     senha VARCHAR(50)
 );
 
-CREATE TABLE usuario(
+CREATE TABLE IF NOT EXISTS usuario(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255),
     telefone VARCHAR(11),
@@ -20,41 +17,40 @@ CREATE TABLE usuario(
     FOREIGN KEY (fk_login) REFERENCES login(id)
 );
 
-CREATE TABLE bucketS3 (
+CREATE TABLE IF NOT EXISTS imagem(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    referencia VARCHAR(50)
+    referencia VARCHAR(45)
 );
 
-CREATE TABLE velas(
+CREATE TABLE IF NOT EXISTS velas(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(45),
 	descricao VARCHAR(255),
     tamanho VARCHAR(1),
     preco DOUBLE,
-    fk_bucketS3 INT,
-    FOREIGN KEY (fk_bucketS3) REFERENCES bucketS3(id)
+    fk_imagem INT,
+    FOREIGN KEY (fk_imagem) REFERENCES imagem(id)
 );
 
-CREATE TABLE lotes(
+CREATE TABLE IF NOT EXISTS lotes(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_vela INT,
     quantidade INT,
     data_fabricacao DATE,
     data_validade DATE,
     localizacao INT,
-    fk_bucketS3 INT,
-    FOREIGN KEY (fk_vela) REFERENCES velas(id),
-	FOREIGN KEY (fk_bucketS3) REFERENCES bucketS3(id)
+    codigo_qr_code VARCHAR(255),
+    FOREIGN KEY (fk_vela) REFERENCES velas(id)
 );
 
-CREATE TABLE clientes(
+CREATE TABLE IF NOT EXISTS clientes(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(45) UNIQUE,
+    nome VARCHAR(45),
     telefone CHAR(11),
     qtd_pedidos INT
 );
 
-CREATE TABLE pedidos(
+CREATE TABLE IF NOT EXISTS pedidos(
     id INT PRIMARY KEY AUTO_INCREMENT,
     data_do_pedido DATE,
     status_do_pedido VARCHAR(45),
@@ -65,7 +61,7 @@ CREATE TABLE pedidos(
     FOREIGN KEY (fk_cliente) REFERENCES clientes(id)
 );
 
-CREATE TABLE pedido_vela(
+CREATE TABLE IF NOT EXISTS pedido_vela(
     id INT PRIMARY KEY AUTO_INCREMENT,
     quantidade INT,
     fk_vela INT,
@@ -74,17 +70,16 @@ CREATE TABLE pedido_vela(
     FOREIGN KEY (fk_pedido) REFERENCES pedidos(id)
 );
 
-CREATE TABLE vendas(
+CREATE TABLE IF NOT EXISTS vendas(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fk_pedido INT,
     metodo_pag VARCHAR(45),
     FOREIGN KEY (fk_pedido) REFERENCES pedidos(id)
 );
 
-CREATE TABLE metas(
+CREATE TABLE IF NOT EXISTS metas(
     id INT PRIMARY KEY AUTO_INCREMENT,
     data_inicio DATE,
 	data_final DATE,
     qtd_vendas INT
 );
-

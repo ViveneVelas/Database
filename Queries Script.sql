@@ -1,236 +1,189 @@
--- Queries e Views banco de dados Vivene Velas -- 
 
 -- ======================================================
--- 1. VIEW VELA MAIS VENDIDA - OK
+-- 1. VIEW VELA MAIS VENDIDA - KPI'S
 -- ======================================================
 CREATE OR REPLACE VIEW vela_mais_vendida AS
 SELECT 
-    v.id AS vela_id,
-    v.nome AS vela_nome,
-    SUM(pv.quantidade) AS total_vendido
-FROM 
-    pedido_vela pv
-JOIN 
-    velas v ON pv.fk_vela = v.id
-GROUP BY 
-    v.id, v.nome
-ORDER BY 
-    total_vendido DESC
+    ROW_NUMBER() OVER () AS id,
+    fk_vela as vela_id,
+	count(quantidade) as total_vendido, 
+    nome as vela_nome
+FROM pedido_vela 
+JOIN velas 
+	WHERE fk_vela = velas.id 
+	GROUP BY fk_vela
 LIMIT 1;
-
 SELECT * FROM vela_mais_vendida;
 
 -- ======================================================
--- 2. VIEW TOP 5 VELAS MAIS VENDIDAS - OK
+-- 2. VIEW QTD Velas vendida semana - KPI'S
+-- ======================================================
+CREATE OR REPLACE VIEW qtd_vendas_da_semana AS
+SELECT 
+	SUM(quantidade) as qtd
+FROM 
+	pedidos 
+JOIN
+	pedido_vela
+WHERE 
+	fk_pedido = pedidos.id
+AND
+	data_do_pedido BETWEEN DATE_SUB(CURDATE(), INTERVAL 7 DAY) 
+AND 
+	CURDATE()
+AND 
+	status_do_pedido = 'concluido';
+
+SELECT * FROM qtd_vendas_da_semana;
+-- ======================================================
+-- 3. VIEW TOP 5 VELAS MAIS VENDIDAS - DASHBOARD
 -- ======================================================
 CREATE OR REPLACE VIEW top_cinco_velas AS
-SELECT 
-    v.id AS vela_id,
-    v.nome AS vela_nome,
-    SUM(pv.quantidade) AS total_vendido
-FROM 
-    pedido_vela pv
-JOIN 
-    velas v ON pv.fk_vela = v.id
-GROUP BY 
-    v.id, v.nome
-ORDER BY 
-    total_vendido DESC
+SELECT  
+    ROW_NUMBER() OVER () AS id,
+    fk_vela as vela_id,
+	count(quantidade) as total_vendido, 
+    nome as vela_nome
+FROM pedido_vela 
+JOIN velas 
+	WHERE fk_vela = velas.id 
+	GROUP BY fk_vela
 LIMIT 5;
-
 SELECT * FROM top_cinco_velas;
--- ======================================================
--- 3. VIEW PROX PEDIDO - A FAZER
--- ======================================================
-CREATE OR REPLACE VIEW proximo_pedido AS
-SELECT
-    p.id AS id,
-    p.data_do_pedido AS data_do_pedido,
-    p.status_do_pedido AS status_do_pedido,
-    p.descricao AS descricao,
-    p.tipo_entrega AS tipo_de_entrega,
-    c.nome AS nome_do_cliente,
-    c.telefone AS telefone_do_cliente
-FROM
-    pedidos p
-JOIN
-    clientes c ON p.fk_cliente = c.id
-WHERE
-    p.status_do_pedido = 'Pendente'
-ORDER BY
-    p.data_do_pedido ASC
-LIMIT 1;
-
-SELECT * FROM proximo_pedido;
 
 -- ======================================================
--- 4. VIEW LOTES PROXIMOS DO VENCIMENTO - OK
+-- 4. VIEW Vendas 6 meses - DASHBOARD
 -- ======================================================
-CREATE OR REPLACE VIEW lotes_proximo_do_vencimento AS
+CREATE OR REPLACE VIEW quantidade_vendas_seis_meses AS
 SELECT 
-    l.id AS id,
-    v.nome AS nome_da_vela,
-    l.quantidade,
-    l.data_fabricacao,
-    l.data_validade,
-    l.localizacao
+	ROW_NUMBER() OVER () AS id,
+    MONTH(pedidos.data_do_pedido) AS mes,
+    YEAR(pedidos.data_do_pedido) AS ano,
+    COUNT(pedidos.id) AS quantidade_pedidos_concluidos
 FROM 
-    lotes l
-JOIN 
-    velas v ON l.fk_vela = v.id
+    pedidos 
 WHERE 
-    l.data_validade > CURDATE()
+    pedidos.status_do_pedido = 'concluido'
+GROUP BY 
+    YEAR(pedidos.data_do_pedido), MONTH(pedidos.data_do_pedido)
 ORDER BY 
-    l.data_validade ASC
-LIMIT 1;
-
-SELECT * FROM lotes_proximo_do_vencimento;
+    ano, mes DESC
+LIMIT 6;
+    
+SELECT * FROM quantidade_vendas_seis_meses;
 
 -- ======================================================
--- 5. VIEW VENDAS DA SEMANA - OK
+-- 5. VIEW Metas 6 meses - DASHBOARD
+-- ======================================================
+CREATE OR REPLACE VIEW ultima_meta_seis_meses AS
+SELECT 
+	id,
+    data_inicio,
+    qtd_vendas
+FROM metas m
+JOIN (
+    SELECT 
+        YEAR(data_inicio) AS ano, 
+        MONTH(data_inicio) AS mes, 
+        MAX(data_inicio) AS ultima_data
+    FROM metas
+    WHERE data_inicio >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+    GROUP BY ano, mes
+) ultimas_metas
+ON YEAR(m.data_inicio) = ultimas_metas.ano 
+   AND MONTH(m.data_inicio) = ultimas_metas.mes
+   AND m.data_inicio = ultimas_metas.ultima_data
+ORDER BY m.data_inicio DESC;
+
+SELECT * FROM ultima_meta_seis_meses;
+
+-- ======================================================
+-- 6. VIEW PARA ENCONTRAR CLIENTES COM MAIS COMPRAS - TABELA
+-- ======================================================
+CREATE OR REPLACE VIEW clientes_mais_compras AS
+SELECT
+	id as id,
+    nome as nome_do_cliente,
+    qtd_pedidos as numero_de_pedidos
+FROM
+	clientes
+ORDER BY
+    numero_de_pedidos DESC
+    LIMIT 5;
+SELECT * FROM clientes_mais_compras;    
+
+
+
+
+-- REVISAR
+
+-- ======================================================
+-- 5. VIEW VENDAS DA SEMANA - A FAZER
 -- ======================================================
 CREATE OR REPLACE VIEW vendas_da_semana AS
-SELECT
+SELECT 
     vendas.id AS id,
     vendas.metodo_pag AS metodo_de_pagamento,
     pedidos.data_do_pedido AS data_do_pedido,
     clientes.nome AS nome_do_cliente,
     clientes.telefone AS telefone_do_cliente
-FROM
+FROM 
     vendas
-JOIN
+JOIN 
     pedidos ON vendas.fk_pedido = pedidos.id
-JOIN
+JOIN 
     clientes ON pedidos.fk_cliente = clientes.id
-WHERE
-    pedidos.status_do_pedido = 'Concluído'
+WHERE 
+    pedidos.status_do_pedido = 'concluido'
     AND YEARWEEK(pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
-
+    
 SELECT * FROM vendas_da_semana;
 
 -- ======================================================
--- 5.1. VIEW VENDAS QTD DA SEMANA - OK
+-- 3. VIEW PROX PEDIDO - A FAZER
 -- ======================================================
-CREATE OR REPLACE VIEW qtd_vendas_da_semana AS
+CREATE OR REPLACE VIEW proximo_pedido AS
 SELECT 
-    COUNT(vendas.id) AS qtd
+    P.id AS id,
+    P.data_do_pedido AS data_do_pedido,
+    P.status_do_pedido AS status_do_pedido,
+    P.descricao AS descricao,
+    P.tipo_entrega AS tipo_de_entrega,
+    C.nome AS nome_do_cliente,
+    C.telefone AS telefone_do_cliente
 FROM 
-    vendas
+    pedidos P
 JOIN 
-    pedidos ON vendas.fk_pedido = pedidos.id
-JOIN 
-    clientes ON pedidos.fk_cliente = clientes.id
+    clientes C ON P.fk_cliente = C.id
 WHERE 
-    pedidos.status_do_pedido = 'Concluído'
-    AND YEARWEEK(pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
+    P.status_do_pedido != 'concluido'
+ORDER BY 
+    P.data_do_pedido ASC
+LIMIT 1;
 
-SELECT * FROM qtd_vendas_da_semana;
+SELECT * FROM proximo_pedido;
 
--- ======================================================
--- 6. VIEW PARA ENCONTRAR CLIENTES COM MAIS COMPRAS - OK
--- ======================================================
-CREATE OR REPLACE VIEW clientes_mais_compras AS
+
+CREATE OR REPLACE VIEW top_cinco_pedidos AS
 SELECT
-    c.id AS id,
-    c.nome AS nome_do_cliente,
-    COUNT(p.id) AS numero_de_pedidos
-FROM
-    clientes c
-JOIN
-    pedidos p ON c.id = p.fk_cliente
+   ROW_NUMBER() OVER() AS id,
+   p.data_do_pedido AS data_pedido,
+   c.nome AS nome_cliente,
+   SUM(pv.quantidade) AS quantidade_velas
+FROM 
+   pedidos p
+JOIN 
+   pedido_vela pv ON p.id = pv.fk_pedido
+JOIN 
+   clientes c ON p.fk_cliente = c.id
 WHERE
-    p.status_do_pedido = 'Concluído'
+   p.status_do_pedido != 'concluido'
+   AND p.data_do_pedido > CURDATE()
 GROUP BY
-    c.id, c.nome
-ORDER BY
-    numero_de_pedidos DESC
+   p.id, p.data_do_pedido, c.nome
+ORDER BY 
+   p.data_do_pedido ASC
 LIMIT 5;
 
-SELECT * FROM clientes_mais_compras;
 
--- ======================================================
--- 7. VIEW PARA ENCONTRAR ULTIMA META DO MES, EM SEIS MESES
--- ======================================================
-CREATE OR REPLACE VIEW ultima_meta_seis_meses AS
-SELECT 
-    ROW_NUMBER() OVER() AS id,
-    data_inicio as data_inicio,
-    qtd_vendas as quantidade_vendas
-FROM (
-    SELECT 
-        data_inicio,
-        qtd_vendas,
-        ROW_NUMBER() OVER (PARTITION BY YEAR(data_inicio), MONTH(data_inicio) ORDER BY data_inicio DESC) AS rn
-    FROM 
-        metas
-    WHERE 
-        data_inicio >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-) AS UltimasMetas
-WHERE rn = 1
-LIMIT 6;
-
-SELECT * FROM ultima_meta_seis_meses;
-
--- ======================================================
--- 8. VIEW PARA OBTER A QUANTIDADE DE VENDAS POR MES, EM SEIS MESES
--- ======================================================
-CREATE OR REPLACE VIEW quantidade_vendas_seis_meses AS
-SELECT 
-    ROW_NUMBER() OVER() AS id,
-    DATE_FORMAT(p.data_do_pedido, '%Y-%m-01') AS mes_ano,
-    COUNT(*) AS quantidade_pedidos_concluidos
-FROM 
-    pedidos p
-WHERE 
-    p.status_do_pedido = 'Concluído'
-    AND p.data_do_pedido >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-GROUP BY 
-    mes_ano
-ORDER BY 
-    mes_ano ASC;
-
-SELECT * FROM quantidade_vendas_seis_meses;
-select * from vendas;
-
--- ======================================================
--- 9. VIEW PARA OBTER O MAIOR PEDIDO FEITO
--- ======================================================
-
-CREATE OR REPLACE VIEW maior_pedido_pendente AS
-SELECT 
-    p.id AS pedido_id,
-    p.descricao AS descricao_pedido,
-    SUM(pv.quantidade) AS total_itens
-FROM 
-    pedidos p
-JOIN 
-    pedido_vela pv ON p.id = pv.fk_pedido
-WHERE 
-    p.status_do_pedido = 'Pendente'
-GROUP BY 
-    p.id, p.descricao
-ORDER BY 
-    total_itens DESC
-LIMIT 1;
-
-SELECT * FROM maior_pedido_pendente;
-
--- ======================================================
--- 10. VIEW PARA OBTER A VELA COM A MENOR QUANTIDADE
--- ======================================================
-
-CREATE OR REPLACE VIEW lote_menor_quantidade AS
-SELECT 
-    l.id AS lote_id,
-    v.nome AS nome_vela,
-    l.fk_vela AS fk_vela,
-    l.quantidade AS quantidade_no_lote
-FROM 
-    lotes l
-JOIN 
-    velas v ON l.fk_vela = v.id
-ORDER BY 
-    l.quantidade ASC
-LIMIT 1;
-
-SELECT * FROM lote_menor_quantidade;
+SELECT * FROM top_cinco_pedidos;
