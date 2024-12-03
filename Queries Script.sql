@@ -122,20 +122,20 @@ SELECT * FROM clientes_mais_compras;
 -- ======================================================
 CREATE VIEW vendas_da_semana AS
 SELECT 
-    Vendas.id AS id,
-    Vendas.metodoPag AS metodo_de_pagamento,
-    Pedidos.data_do_pedido AS data_do_pedido,
-    Clientes.nome AS nome_do_cliente,
-    Clientes.telefone AS telefone_do_cliente
+    vendas.id AS id,
+    vendas.metodo_pag AS metodo_de_pagamento,
+    pedidos.data_do_pedido AS data_do_pedido,
+    clientes.nome AS nome_do_cliente,
+    clientes.telefone AS telefone_do_cliente
 FROM 
-    Vendas
+    vendas
 JOIN 
-    Pedidos ON Vendas.fk_pedido = Pedidos.id
+    pedidos ON vendas.fk_pedido = pedidos.id
 JOIN 
-    Clientes ON Pedidos.fk_cliente = Clientes.id
+    clientes ON pedidos.fk_cliente = clientes.id
 WHERE 
-    Pedidos.status_do_pedido = 'Concluído'
-    AND YEARWEEK(Pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
+    pedidos.status_do_pedido = 'Concluído'
+    AND YEARWEEK(pedidos.data_do_pedido, 1) = YEARWEEK(CURDATE(), 1);
     
 SELECT * FROM vendas_da_semana;
 
@@ -144,21 +144,21 @@ SELECT * FROM vendas_da_semana;
 -- ======================================================
 CREATE VIEW proximo_pedido AS
 SELECT 
-    P.id AS id,
-    P.data_do_pedido AS data_do_pedido,
-    P.status_do_pedido AS status_do_pedido,
-    P.descricao AS descricao,
-    P.tipoEntrega AS tipo_de_entrega,
-    C.nome AS nome_do_cliente,
-    C.telefone AS telefone_do_cliente
+    p.id AS id,
+    p.data_do_pedido AS data_do_pedido,
+    p.status_do_pedido AS status_do_pedido,
+    p.descricao AS descricao,
+    p.tipo_entrega AS tipo_de_entrega,
+    c.nome AS nome_do_cliente,
+    c.telefone AS telefone_do_cliente
 FROM 
-    Pedidos P
+    pedidos p
 JOIN 
-    Clientes C ON P.fk_cliente = C.id
+    clientes c ON p.fk_cliente = c.id
 WHERE 
-    P.status_do_pedido = 'Pendente'
+    p.status_do_pedido = 'Pendente'
 ORDER BY 
-    P.data_do_pedido ASC
+    p.data_do_pedido ASC
 LIMIT 1;
 
 SELECT * FROM proximo_pedido;
